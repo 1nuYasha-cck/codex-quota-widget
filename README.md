@@ -28,7 +28,7 @@
 
 Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Codex 账号的使用额度状态。它不要求你手动输入 Token，也不会上传额度数据；它通过本机已安装的 Codex 程序读取官方客户端可访问的额度快照，并把信息整理成一个紧凑的悬浮窗。
 
-这个项目参考了 `xicunwus2025-sys/codex-led-widget` 的小组件方向，但做了重新整理：仓库名称、README 表达、视觉素材、路径解析逻辑和隐私说明都重新设计，避免直接复用原项目素材和文案。
+这个项目参考了 `xicunwus2025-sys/codex-led-widget` 的小组件方向，但做了重新开发。
 
 ## 界面预览
 
@@ -77,7 +77,7 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 %LOCALAPPDATA%\OpenAI\Codex\bin\<version-hash>\codex.exe
 ```
 
-它不会再从 `Downloads\codex-msix-repack` 目录读取额度数据，避免旧版重打包程序造成的额度显示偏差。
+额度数据。
 
 ## 隐私与安全
 
@@ -85,10 +85,8 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 - 不要求输入 Codex Token。
 - 不读取、保存、打印或上传认证 Token。
-- 不提交 `.codex` 目录、环境变量文件、日志、构建产物。
 - 额度读取依赖本机 Codex 已有登录状态。
 - 今日 Token 统计只来自本机 session 日志里的用量字段。
-- 远程仓库不包含 `dist`、`node_modules`、`.env`、`.codex`、缓存或本机用户数据。
 
 ## 安装与使用
 
@@ -151,10 +149,6 @@ codex-quota-widget/
 ### 为什么小组件显示的额度和 Codex 内部有时不同？
 
 额度快照可能存在刷新延迟。小组件每次刷新都会重新读取本机 Codex 返回的 `usedPercent`，再换算成剩余百分比。如果 Codex 后台刚完成用量结算，刷新后可能出现 1% 左右的变化。
-
-### 为什么不再读取 repack 目录？
-
-旧的重打包目录可能对应过期 Codex 版本，返回的数据口径和当前客户端不一致。当前逻辑会优先使用本机安装目录里的 Codex 可执行文件，并过滤 `Downloads\codex-msix-repack`。
 
 ### 会不会把我的 Codex Token 发到 GitHub？
 
