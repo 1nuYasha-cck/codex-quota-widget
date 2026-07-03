@@ -1,6 +1,10 @@
 # Codex Quota Widget
 
 <p align="center">
+  中文说明 | <a href="README_EN.md">English README</a>
+</p>
+
+<p align="center">
   <img src="assets/readme-hero.svg" alt="Codex Quota Widget 产品预览" width="880" />
 </p>
 
@@ -11,6 +15,7 @@
 
 <p align="center">
   <a href="#核心功能">核心功能</a> ·
+  <a href="#release-下载">Release 下载</a> ·
   <a href="#隐私与安全">隐私与安全</a> ·
   <a href="#本地开发">本地开发</a> ·
   <a href="#常见问题">常见问题</a>
@@ -29,6 +34,14 @@
 Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Codex 账号的使用额度状态。它不要求你手动输入 Token，也不会上传额度数据；它通过本机已安装的 Codex 程序读取官方客户端可访问的额度快照，并把信息整理成一个紧凑的悬浮窗。
 
 这个项目参考了 `xicunwus2025-sys/codex-led-widget` 的小组件方向，但做了重新开发。
+
+## Release 下载
+
+最新稳定版为 `v1.0`，可直接在 GitHub Releases 下载 Windows 便携版：
+
+[下载 Codex Quota Widget v1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.0)
+
+下载 `.exe` 后双击运行即可。首次运行如果 Windows SmartScreen 提示未知发布者，是因为当前构建未做代码签名；确认来源可信后，可以选择继续运行。
 
 ## 界面预览
 
@@ -92,7 +105,7 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 ### 下载运行
 
-后续可以在 Releases 页面下载 Windows 便携版 `.exe`。首次运行如果 Windows SmartScreen 提示未知发布者，是因为当前构建未做代码签名；确认来源可信后，可以选择继续运行。
+请在 [Release 下载](#release-下载) 中获取最新 Windows 便携版 `.exe`。
 
 ### 本地运行
 
@@ -110,7 +123,7 @@ npm run build
 打包完成后，Windows 便携版会输出到：
 
 ```txt
-dist/Codex-Quota-Widget-0.1.0-win-x64.exe
+dist/Codex-Quota-Widget-1.0.0-win-x64.exe
 ```
 
 ## 本地开发

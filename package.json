@@ -1,6 +1,6 @@
 {
   "name": "codex-quota-widget",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Windows desktop widget for monitoring local Codex quota.",
   "main": "src/main/main.js",
   "author": "Codex Quota Widget Contributors",
