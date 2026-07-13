@@ -21,17 +21,7 @@
           </div>
         </div>
         <div class="window-actions">
-          <button id="langBtn" class="text-button" title="Language" aria-label="Language">EN</button>
-          <button id="pinBtn" class="icon-button active" title="取消置顶" aria-label="取消置顶">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M14 4l6 6-3 1-4 4v4l-2 2-2-6-6-2 2-2h4l4-4 1-3z" />
-            </svg>
-          </button>
-          <button id="refreshBtn" class="icon-button" title="刷新" aria-label="刷新">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20 12a8 8 0 0 1-13.7 5.7M4 12A8 8 0 0 1 17.7 6.3M17 3v4h-4M7 21v-4h4" />
-            </svg>
-          </button>
+          <button id="settingsBtn" class="icon-button more-button" title="更多" aria-label="更多" aria-expanded="false">···</button>
           <button id="minimizeBtn" class="icon-button" title="隐藏" aria-label="隐藏">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12h14" />
@@ -44,6 +34,37 @@
           </button>
         </div>
       </header>
+
+      <aside id="settingsPanel" class="settings-panel" hidden>
+        <div class="settings-heading">
+          <strong id="settingsTitle">更多</strong>
+          <span id="settingsHint">快捷操作与显示设置</span>
+        </div>
+        <div class="menu-actions">
+          <button id="refreshBtn" class="panel-action" type="button">刷新</button>
+          <button id="pinBtn" class="panel-action active" type="button">取消置顶</button>
+          <button id="langBtn" class="panel-action" type="button">English</button>
+        </div>
+        <label class="setting-row">
+          <span id="showFiveHourLabel">5小时额度</span>
+          <input id="showFiveHourInput" type="checkbox" checked />
+        </label>
+        <label class="setting-row">
+          <span id="showWeeklyLabel">7天额度</span>
+          <input id="showWeeklyInput" type="checkbox" checked />
+        </label>
+        <label class="setting-row">
+          <span id="showLiquidLabel">水位显示</span>
+          <input id="showLiquidInput" type="checkbox" checked />
+        </label>
+        <label class="setting-source">
+          <span id="liquidSourceLabel">水位代表</span>
+          <select id="liquidSourceInput">
+            <option id="liquidFiveHourOption" value="fiveHour">5小时额度</option>
+            <option id="liquidWeeklyOption" value="weekly" selected>7天额度</option>
+          </select>
+        </label>
+      </aside>
 
       <section class="content">
         <div id="liquidMeter" class="liquid-meter" aria-label="Codex 剩余额度">
@@ -60,7 +81,11 @@
         </div>
 
         <div class="quota-panel">
-          <div class="quota-card primary">
+          <div id="fiveHourCard" class="quota-card primary">
+            <span id="fiveHourLabel">5小时</span>
+            <strong id="fiveHourText">--</strong>
+          </div>
+          <div id="weeklyCard" class="quota-card primary">
             <span id="weeklyLabel">7天</span>
             <strong id="weeklyText">--</strong>
           </div>
@@ -81,6 +106,7 @@
       </footer>
     </main>
 
+    <script src="./widget-logic.js"></script>
     <script src="./renderer.js"></script>
   </body>
 </html>

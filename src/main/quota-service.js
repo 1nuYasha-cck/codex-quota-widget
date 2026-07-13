@@ -1,31 +1,50 @@
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const readline = require("node:readline");
 
-const DEFAULT_TIMEOUT_MS = 12000;
+const DEFAULT_TIMEOUT_MS = 20000;
 const TOKEN_CACHE_TTL_MS = 60_000;
 
 let quotaRequest = null;
 let tokenCache = null;
 
-function resolveCodexPath() {
-  const localAppData = process.env.LOCALAPPDATA || "";
-  const candidates = [
-    process.env.CODEX_CLI_PATH,
-    findLatestLocalCodexBin(localAppData),
-    path.join(localAppData, "OpenAI", "Codex", "bin", "codex.exe"),
-    path.join(localAppData, "OpenAI", "Codex", "app", "resources", "codex.exe"),
-    path.join(localAppData, "Programs", "Codex", "resources", "codex.exe"),
-    findOnPath("codex.exe"),
-    findOnPath("codex")
-  ].filter(Boolean).filter(isAllowedCodexPath);
+function resolveCodexCandidates(env = process.env, platform = process.platform) {
+  const localAppData = env.LOCALAPPDATA || "";
+  const appData = env.APPDATA || path.join(env.USERPROFILE || "", "AppData", "Roaming");
+  const home = env.HOME || env.USERPROFILE || os.homedir();
+  const isWindows = platform === "win32";
+  const candidates = (isWindows
+    ? [
+        env.CODEX_CLI_PATH,
+        ...findLocalCodexBins(localAppData),
+        safeJoin(localAppData, "OpenAI", "Codex", "bin", "codex.exe"),
+        safeJoin(localAppData, "OpenAI", "Codex", "app", "resources", "codex.exe"),
+        safeJoin(localAppData, "Programs", "Codex", "resources", "codex.exe"),
+        safeJoin(appData, "npm", "codex.cmd"),
+        safeJoin(localAppData, "pnpm", "codex.cmd"),
+        safeJoin(home, ".bun", "bin", "codex.exe"),
+        ...findOnPath(["codex.exe", "codex.cmd"], env),
+        "codex"
+      ]
+    : [
+        env.CODEX_CLI_PATH,
+        safeJoin("/Applications", "Codex.app", "Contents", "Resources", "codex"),
+        safeJoin(home, "Applications", "Codex.app", "Contents", "Resources", "codex"),
+        safeJoin(home, ".local", "bin", "codex"),
+        safeJoin(home, ".npm-global", "bin", "codex"),
+        safeJoin(home, "Library", "pnpm", "codex"),
+        safeJoin(home, ".bun", "bin", "codex"),
+        "/opt/homebrew/bin/codex",
+        "/usr/local/bin/codex",
+        ...findOnPath(["codex"], env, ":"),
+        "codex"
+      ])
+    .filter(Boolean)
+    .filter(isAllowedCodexPath);
 
-  for (const candidate of uniquePaths(candidates)) {
-    if (fs.existsSync(candidate)) return candidate;
-  }
-
-  return "codex";
+  return uniquePaths(candidates).filter((candidate) => candidate === "codex" || fs.existsSync(candidate));
 }
 
 async function getQuota() {
@@ -63,6 +82,7 @@ async function readQuota() {
       planType: null,
       reachedType: null,
       credits: null,
+      fiveHour: null,
       weekly: null,
       remainingPercent: null,
       usedPercent: null,
@@ -74,23 +94,31 @@ async function readQuota() {
   }
 }
 
-function findOnPath(command) {
-  const pathValue = process.env.PATH || process.env.Path || "";
-  const directories = pathValue.split(path.delimiter).filter(Boolean);
-  for (const directory of directories) {
-    const candidate = path.join(directory, command);
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  return null;
+function safeJoin(root, ...parts) {
+  return root ? path.join(root, ...parts) : null;
 }
 
-function findLatestLocalCodexBin(localAppData) {
+function findOnPath(commands, env = process.env, delimiter = path.delimiter) {
+  const pathValue = env.PATH || env.Path || "";
+  const directories = pathValue.split(delimiter).filter(Boolean);
+  const matches = [];
+  for (const directory of directories) {
+    for (const command of commands) {
+      const candidate = path.join(directory.replace(/^"|"$/g, ""), command);
+      if (fs.existsSync(candidate)) matches.push(candidate);
+    }
+  }
+  return matches;
+}
+
+function findLocalCodexBins(localAppData) {
+  if (!localAppData) return [];
   const root = path.join(localAppData, "OpenAI", "Codex", "bin");
   let entries;
   try {
     entries = fs.readdirSync(root, { withFileTypes: true });
   } catch {
-    return null;
+    return [];
   }
 
   const candidates = entries
@@ -100,7 +128,7 @@ function findLatestLocalCodexBin(localAppData) {
     .map((candidate) => ({ candidate, mtimeMs: fs.statSync(candidate).mtimeMs }))
     .sort((a, b) => b.mtimeMs - a.mtimeMs);
 
-  return candidates[0]?.candidate || null;
+  return candidates.map(({ candidate }) => candidate);
 }
 
 function isAllowedCodexPath(candidate) {
@@ -126,8 +154,14 @@ function firstSnapshot(map) {
 
 function normalizeSnapshot(snapshot) {
   const windows = [snapshot.primary, snapshot.secondary].filter(Boolean);
-  const weeklySource = windows.find((window) => Number(window.windowDurationMins) >= 7 * 24 * 60) || snapshot.secondary || snapshot.primary;
+  const weeklySource = windows.find((window) => Number(window.windowDurationMins) >= 7 * 24 * 60) ||
+    (snapshot.secondary && !isFiveHourWindow(snapshot.secondary) ? snapshot.secondary : null) ||
+    (snapshot.primary && !isFiveHourWindow(snapshot.primary) ? snapshot.primary : null);
+  const fiveHourSource = windows.find(isFiveHourWindow) ||
+    (snapshot.primary && snapshot.primary !== weeklySource ? snapshot.primary : null);
+  const fiveHour = normalizeWindow(fiveHourSource);
   const weekly = normalizeWindow(weeklySource);
+  const activeWindow = weekly || fiveHour;
 
   return {
     limitId: snapshot.limitId || "codex",
@@ -135,12 +169,18 @@ function normalizeSnapshot(snapshot) {
     planType: snapshot.planType || "unknown",
     reachedType: snapshot.rateLimitReachedType || null,
     credits: snapshot.credits || null,
+    fiveHour,
     weekly,
-    remainingPercent: weekly ? weekly.remainingPercent : null,
-    usedPercent: weekly ? weekly.usedPercent : null,
-    resetsAt: weekly ? weekly.resetsAt : null,
+    remainingPercent: activeWindow ? activeWindow.remainingPercent : null,
+    usedPercent: activeWindow ? activeWindow.usedPercent : null,
+    resetsAt: activeWindow ? activeWindow.resetsAt : null,
     fetchedAt: new Date().toISOString()
   };
+}
+
+function isFiveHourWindow(window) {
+  const duration = Number(window?.windowDurationMins);
+  return Number.isFinite(duration) && duration > 0 && duration < 24 * 60;
 }
 
 function normalizeWindow(window) {
@@ -198,7 +238,8 @@ async function getCachedTodayTokenUsage() {
 }
 
 async function listSessionFilesForRange(start, end) {
-  const sessionRoot = path.join(process.env.USERPROFILE || "", ".codex", "sessions");
+  const home = process.env.HOME || process.env.USERPROFILE || os.homedir();
+  const sessionRoot = path.join(process.env.CODEX_HOME || path.join(home, ".codex"), "sessions");
   const days = uniquePathDays([
     formatPathDay(start),
     formatPathDay(end),
@@ -297,9 +338,36 @@ function numberOrZero(value) {
   return Number.isFinite(number) ? number : 0;
 }
 
-function requestRateLimits() {
-  const codexPath = resolveCodexPath();
-  const child = spawn(codexPath, ["app-server", "--listen", "stdio://"], {
+async function requestRateLimits() {
+  const candidates = resolveCodexCandidates();
+  const failures = [];
+
+  for (const candidate of candidates) {
+    try {
+      return await requestRateLimitsFrom(candidate);
+    } catch (error) {
+      failures.push(error?.message || String(error));
+    }
+  }
+
+  const relevantError = failures.find((message) => !/ENOENT|not found|cannot find/i.test(message));
+  const finalError = relevantError || failures.at(-1) || "Codex executable was not found.";
+  throw new Error(`Tried ${candidates.length} Codex installation path(s). ${finalError}`);
+}
+
+function createSpawnSpec(candidate) {
+  if (process.platform === "win32" && /\.(cmd|bat)$/i.test(candidate)) {
+    return {
+      command: process.env.ComSpec || "cmd.exe",
+      args: ["/d", "/s", "/c", `call "${candidate}" app-server --listen stdio://`]
+    };
+  }
+  return { command: candidate, args: ["app-server", "--listen", "stdio://"] };
+}
+
+function requestRateLimitsFrom(candidate) {
+  const spawnSpec = createSpawnSpec(candidate);
+  const child = spawn(spawnSpec.command, spawnSpec.args, {
     stdio: ["pipe", "pipe", "pipe"],
     windowsHide: true
   });
@@ -307,6 +375,7 @@ function requestRateLimits() {
   let buffer = "";
   let stderr = "";
   let nextId = 1;
+  let settled = false;
   const pending = new Map();
 
   const cleanup = () => {
@@ -351,16 +420,19 @@ function requestRateLimits() {
   });
 
   return new Promise((resolve, reject) => {
-    child.once("error", (error) => {
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
       cleanup();
       reject(error);
+    };
+
+    child.once("error", (error) => {
+      fail(error);
     });
 
     child.once("exit", (code) => {
-      if (pending.size > 0) {
-        cleanup();
-        reject(new Error(stderr || `Codex app-server exited with code ${code}`));
-      }
+      if (!settled) fail(new Error(stderr || `Codex app-server exited with code ${code}`));
     });
 
     (async () => {
@@ -369,16 +441,17 @@ function requestRateLimits() {
           clientInfo: {
             name: "codex-quota-widget",
             title: "Codex Quota Widget",
-            version: "1.1.0"
+            version: "1.2.0"
           },
           capabilities: null
         });
         const result = await send("account/rateLimits/read");
+        settled = true;
         cleanup();
         resolve(result);
       } catch (error) {
-        cleanup();
-        reject(new Error(stderr || error.message));
+        const details = [error?.message, stderr.trim()].filter(Boolean);
+        fail(new Error([...new Set(details)].join(" | ")));
       }
     })();
   });
@@ -406,4 +479,10 @@ function handleMessage(line, pending) {
   }
 }
 
-module.exports = { getQuota, normalizeSnapshot, getTodayTokenUsage };
+module.exports = {
+  getQuota,
+  normalizeSnapshot,
+  getTodayTokenUsage,
+  resolveCodexCandidates,
+  createSpawnSpec
+};

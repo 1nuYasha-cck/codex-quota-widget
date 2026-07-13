@@ -10,7 +10,7 @@
 
 <p align="center">
   <strong>A compact Windows desktop widget for monitoring your local Codex quota.</strong><br />
-  It keeps the 7-day quota and today's token usage visible in a small desktop panel.
+  It keeps the 5-hour quota, 7-day quota, and today's token usage visible in a small desktop panel.
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 
 The latest stable release is `v1.1.0`:
 
-[Download Codex Quota Widget v1.1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.1.0)
+[Download Codex Quota Widget v1.1.0](https://github.com/1nuYasha-cck/codex-quota-widget/releases/tag/v1.1.0)
 
 Download the Windows portable `.exe` from the release page and run it directly. Windows may show an unknown-publisher warning because the app is not code-signed yet.
 
@@ -42,12 +42,15 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 
 ## Features
 
-- Shows remaining quota and reset time for the 7-day window.
+- Lets you independently show or hide the 5-hour quota, 7-day quota, and liquid meter.
+- Lets the liquid meter follow either quota window and remembers the selection.
 - Displays the current plan type, such as `PLUS`.
 - Reads today's token usage from local `.codex/sessions` logs.
 - Supports always-on-top mode, tray hiding, startup launch, and configurable refresh intervals.
 - Supports free edge resizing and remembers the last window size.
-- Uses clear status colors: green for healthy, yellow for low, red for empty or failed, and blue for loading.
+- Scales the meter, cards, controls, spacing, and type together with the window.
+- Keeps only More, Hide, and Quit in the title bar; refresh, pin, language, and display controls live in the More menu.
+- Uses clear meter thresholds: green at 40% or above, orange below 40%, red below 20%, and blue while loading.
 
 ## Local Codex Path
 
@@ -57,7 +60,7 @@ The widget prefers the current local Codex installation:
 %LOCALAPPDATA%\OpenAI\Codex\bin\<version-hash>\codex.exe
 ```
 
-The widget uses the current local Codex installation to read quota data.
+The widget tries the current Codex Desktop installation first, then global npm, pnpm, Bun, and `PATH` CLI installations.
 
 ## Privacy and Security
 
@@ -90,13 +93,13 @@ npm run build
 The output executable is generated at:
 
 ```txt
-dist/Codex-Quota-Widget-1.0.0-win-x64.exe
+dist/Codex-Quota-Widget-1.2.0-win-x64.exe
 ```
 
 ## Development
 
 ```bash
-git clone https://github.com/1uYasha/codex-quota-widget.git
+git clone https://github.com/1nuYasha-cck/codex-quota-widget.git
 cd codex-quota-widget
 npm install
 npm run dev

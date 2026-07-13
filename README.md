@@ -10,7 +10,7 @@
 
 <p align="center">
   <strong>一个面向 Windows 的 Codex 剩余额度桌面小组件。</strong><br />
-  用悬浮窗口、状态灯和液态仪表盘，把 7 天额度与今日 Token 用量放在桌面一角。
+  用悬浮窗口、状态灯和液态仪表盘，把 5 小时、7 天额度与今日 Token 用量放在桌面一角。
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 最新稳定版为 `v1.1.0`，可直接在 GitHub Releases 下载 Windows 便携版：
 
-[下载 Codex Quota Widget v1.1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.1.0)
+[下载 Codex Quota Widget v1.1.0](https://github.com/1nuYasha-cck/codex-quota-widget/releases/tag/v1.1.0)
 
 下载 `.exe` 后双击运行即可。首次运行如果 Windows SmartScreen 提示未知发布者，是因为当前构建未做代码签名；确认来源可信后，可以选择继续运行。
 
@@ -53,9 +53,9 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 | 状态 | 颜色 | 说明 |
 | --- | --- | --- |
-| 正常 | 绿色 | 7 天窗口剩余额度充足 |
-| 偏低 | 黄色 | 剩余额度低于 10%，建议留意 |
-| 用尽 | 红色 | 当前窗口额度为 0 |
+| 正常 | 绿色 | 水位所选额度剩余 40% 或以上 |
+| 偏低 | 橙色 | 水位所选额度低于 40% |
+| 紧张/用尽 | 红色 | 水位所选额度低于 20% |
 | 读取中 | 蓝色 | 正在从本机 Codex 读取快照 |
 | 失败 | 红色 | 本机 Codex 路径、登录态或读取过程异常 |
 
@@ -63,7 +63,8 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 ### 1. 额度一眼可见
 
-- 显示 7 天窗口剩余百分比和重置时间。
+- 可分别显示或隐藏 5 小时额度、7 天额度和水位仪表。
+- 水位仪表可选择跟随 5 小时或 7 天额度，并记住选择。
 - 显示当前计划类型，例如 `PLUS`。
 - 使用 LED 状态点区分正常、偏低、用尽和读取失败。
 
@@ -77,6 +78,8 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 - 无边框透明窗口，适合放在屏幕角落。
 - 可从窗口边缘自由拖动调整大小，并自动记住上次尺寸。
+- 调整窗口大小时，仪表、卡片、按钮、间距和字体会同步缩放。
+- 标题栏只保留 `···`、隐藏和退出；刷新、置顶、语言及显示选项集中在 `···` 菜单中。
 - 支持置顶和取消置顶。
 - 支持隐藏到托盘，点击托盘图标可再次显示。
 - 支持开机自启动。
@@ -89,6 +92,8 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 ```txt
 %LOCALAPPDATA%\OpenAI\Codex\bin\<version-hash>\codex.exe
 ```
+
+如果桌面版路径不可用，还会依次尝试全局 npm、pnpm、Bun 和系统 `PATH` 中的 Codex CLI。
 
 ## 隐私与安全
 
@@ -121,13 +126,13 @@ npm run build
 打包完成后，Windows 便携版会输出到：
 
 ```txt
-dist/Codex-Quota-Widget-1.0.0-win-x64.exe
+dist/Codex-Quota-Widget-1.2.0-win-x64.exe
 ```
 
 ## 本地开发
 
 ```bash
-git clone https://github.com/1uYasha/codex-quota-widget.git
+git clone https://github.com/1nuYasha-cck/codex-quota-widget.git
 cd codex-quota-widget
 npm install
 npm run dev

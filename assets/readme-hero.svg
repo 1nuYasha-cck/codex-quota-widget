@@ -36,12 +36,12 @@
   <g transform="translate(682 122)" font-family="Segoe UI, Arial, sans-serif">
     <text x="0" y="0" fill="#E2E8F0" font-size="54" font-weight="800">Codex 额度，</text>
     <text x="0" y="64" fill="#E2E8F0" font-size="54" font-weight="800">直接放在桌面上。</text>
-    <text x="0" y="122" fill="#A7F3D0" font-size="22">7 天额度 · 今日 Token · 托盘常驻</text>
+    <text x="0" y="122" fill="#A7F3D0" font-size="22">5 小时 · 7 天 · 水位可选</text>
     <g transform="translate(0 178)">
       <rect width="138" height="46" rx="23" fill="#16A34A"/>
       <text x="69" y="30" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700">绿色正常</text>
-      <rect x="154" width="138" height="46" rx="23" fill="#EAB308"/>
-      <text x="223" y="30" text-anchor="middle" fill="#111827" font-size="17" font-weight="700">黄色偏低</text>
+      <rect x="154" width="138" height="46" rx="23" fill="#FF9F43"/>
+      <text x="223" y="30" text-anchor="middle" fill="#111827" font-size="17" font-weight="700">橙色偏低</text>
       <rect x="308" width="138" height="46" rx="23" fill="#EF4444"/>
       <text x="377" y="30" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700">红色用尽</text>
     </g>

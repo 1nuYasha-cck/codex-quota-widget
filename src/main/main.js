@@ -24,8 +24,10 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: windowSize.width,
     height: windowSize.height,
-    minWidth: 230,
-    minHeight: 180,
+    // Keep the compact layout usable while allowing the meter to be hidden
+    // without leaving an unnecessarily large native window constraint.
+    minWidth: 180,
+    minHeight: 140,
     frame: false,
     transparent: true,
     resizable: true,
@@ -38,7 +40,10 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
-      backgroundThrottling: true
+      // Keep the always-visible Apple Silicon widget responsive when macOS
+      // moves it to the background; Windows keeps the lower-power default.
+      backgroundThrottling: process.platform !== "darwin",
+      v8CacheOptions: "bypassHeatCheckAndEagerCompile"
     }
   });
 
@@ -144,8 +149,8 @@ function normalizeWindowSize(value) {
   const width = Math.round(Number(value?.width));
   const height = Math.round(Number(value?.height));
   return {
-    width: Number.isFinite(width) ? Math.max(230, Math.min(width, 1600)) : 260,
-    height: Number.isFinite(height) ? Math.max(180, Math.min(height, 1200)) : 192
+    width: Number.isFinite(width) ? Math.max(180, Math.min(width, 1600)) : 260,
+    height: Number.isFinite(height) ? Math.max(140, Math.min(height, 1200)) : 192
   };
 }
 
@@ -224,7 +229,10 @@ app.whenReady().then(() => {
   ipcMain.handle("window:alwaysOnTop:get", () => isAlwaysOnTop);
   ipcMain.handle("window:alwaysOnTop:set", (_event, value) => setAlwaysOnTop(value));
   ipcMain.handle("external:openCodex", () => {
-    shell.openPath(path.join(process.env.LOCALAPPDATA || "", "OpenAI", "Codex"));
+    const codexPath = process.platform === "darwin"
+      ? "/Applications/Codex.app"
+      : path.join(process.env.LOCALAPPDATA || "", "OpenAI", "Codex");
+    shell.openPath(codexPath);
   });
 
   app.on("activate", () => {
