@@ -1,6 +1,6 @@
 {
   "name": "codex-quota-widget",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Windows desktop widget for monitoring local Codex quota.",
   "main": "src/main/main.js",
   "author": "Codex Quota Widget Contributors",
@@ -10,7 +10,8 @@
     "dev": "electron .",
     "start": "electron .",
     "build": "set CSC_IDENTITY_AUTO_DISCOVERY=false&& electron-builder --win portable",
-    "build:dir": "set CSC_IDENTITY_AUTO_DISCOVERY=false&& electron-builder --dir"
+    "build:dir": "set CSC_IDENTITY_AUTO_DISCOVERY=false&& electron-builder --dir",
+    "test": "node --test"
   },
   "build": {
     "appId": "cn.codex.quota.widget",

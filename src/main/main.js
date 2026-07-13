@@ -7,6 +7,8 @@ let mainWindow;
 let tray;
 let isAlwaysOnTop = true;
 let refreshIntervalMinutes = 5;
+let windowSize = { width: 260, height: 192 };
+let saveWindowSizeTimer;
 
 const REFRESH_INTERVAL_OPTIONS = [1, 5, 15, 30, 60];
 const DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
@@ -20,13 +22,13 @@ function getIcon() {
 function createWindow() {
   const icon = getIcon();
   mainWindow = new BrowserWindow({
-    width: 260,
-    height: 192,
-    minWidth: 260,
-    minHeight: 192,
+    width: windowSize.width,
+    height: windowSize.height,
+    minWidth: 230,
+    minHeight: 180,
     frame: false,
     transparent: true,
-    resizable: false,
+    resizable: true,
     alwaysOnTop: isAlwaysOnTop,
     skipTaskbar: true,
     show: false,
@@ -41,6 +43,15 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  mainWindow.webContents.on("will-navigate", (event) => event.preventDefault());
+  mainWindow.on("resize", () => {
+    if (!mainWindow || mainWindow.isMaximized() || mainWindow.isMinimized()) return;
+    const { width, height } = mainWindow.getBounds();
+    windowSize = { width, height };
+    clearTimeout(saveWindowSizeTimer);
+    saveWindowSizeTimer = setTimeout(saveSettings, 300);
+  });
   mainWindow.once("ready-to-show", () => {
     mainWindow.setSkipTaskbar(true);
     mainWindow.show();
@@ -108,8 +119,10 @@ function loadSettings() {
   try {
     const settings = JSON.parse(fs.readFileSync(getSettingsPath(), "utf8"));
     refreshIntervalMinutes = normalizeRefreshInterval(settings.refreshIntervalMinutes);
+    windowSize = normalizeWindowSize(settings.windowSize);
   } catch {
     refreshIntervalMinutes = DEFAULT_REFRESH_INTERVAL_MINUTES;
+    windowSize = { width: 260, height: 192 };
   }
 }
 
@@ -118,12 +131,22 @@ function saveSettings() {
     getSettingsPath(),
     JSON.stringify(
       {
-        refreshIntervalMinutes
+        refreshIntervalMinutes,
+        windowSize
       },
       null,
       2
     )
   );
+}
+
+function normalizeWindowSize(value) {
+  const width = Math.round(Number(value?.width));
+  const height = Math.round(Number(value?.height));
+  return {
+    width: Number.isFinite(width) ? Math.max(230, Math.min(width, 1600)) : 260,
+    height: Number.isFinite(height) ? Math.max(180, Math.min(height, 1200)) : 192
+  };
 }
 
 function normalizeRefreshInterval(value) {

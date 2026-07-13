@@ -4,6 +4,10 @@ const path = require("node:path");
 const readline = require("node:readline");
 
 const DEFAULT_TIMEOUT_MS = 12000;
+const TOKEN_CACHE_TTL_MS = 60_000;
+
+let quotaRequest = null;
+let tokenCache = null;
 
 function resolveCodexPath() {
   const localAppData = process.env.LOCALAPPDATA || "";
@@ -25,7 +29,17 @@ function resolveCodexPath() {
 }
 
 async function getQuota() {
-  const todayTokensPromise = getTodayTokenUsage();
+  if (quotaRequest) return quotaRequest;
+  quotaRequest = readQuota();
+  try {
+    return await quotaRequest;
+  } finally {
+    quotaRequest = null;
+  }
+}
+
+async function readQuota() {
+  const todayTokensPromise = getCachedTodayTokenUsage();
 
   try {
     const response = await requestRateLimits();
@@ -49,8 +63,7 @@ async function getQuota() {
       planType: null,
       reachedType: null,
       credits: null,
-      primary: null,
-      secondary: null,
+      weekly: null,
       remainingPercent: null,
       usedPercent: null,
       resetsAt: null,
@@ -112,9 +125,9 @@ function firstSnapshot(map) {
 }
 
 function normalizeSnapshot(snapshot) {
-  const primary = normalizeWindow(snapshot.primary);
-  const secondary = normalizeWindow(snapshot.secondary);
-  const activeWindow = primary || secondary;
+  const windows = [snapshot.primary, snapshot.secondary].filter(Boolean);
+  const weeklySource = windows.find((window) => Number(window.windowDurationMins) >= 7 * 24 * 60) || snapshot.secondary || snapshot.primary;
+  const weekly = normalizeWindow(weeklySource);
 
   return {
     limitId: snapshot.limitId || "codex",
@@ -122,18 +135,19 @@ function normalizeSnapshot(snapshot) {
     planType: snapshot.planType || "unknown",
     reachedType: snapshot.rateLimitReachedType || null,
     credits: snapshot.credits || null,
-    primary,
-    secondary,
-    remainingPercent: activeWindow ? activeWindow.remainingPercent : null,
-    usedPercent: activeWindow ? activeWindow.usedPercent : null,
-    resetsAt: activeWindow ? activeWindow.resetsAt : null,
+    weekly,
+    remainingPercent: weekly ? weekly.remainingPercent : null,
+    usedPercent: weekly ? weekly.usedPercent : null,
+    resetsAt: weekly ? weekly.resetsAt : null,
     fetchedAt: new Date().toISOString()
   };
 }
 
 function normalizeWindow(window) {
   if (!window) return null;
-  const usedPercent = clampPercent(Number(window.usedPercent || 0));
+  const rawUsedPercent = Number(window.usedPercent);
+  if (!Number.isFinite(rawUsedPercent)) return null;
+  const usedPercent = clampPercent(rawUsedPercent);
   return {
     usedPercent,
     remainingPercent: clampPercent(100 - usedPercent),
@@ -171,6 +185,16 @@ async function getTodayTokenUsage(now = new Date()) {
 
   totals.available = totals.events > 0;
   return totals;
+}
+
+async function getCachedTodayTokenUsage() {
+  const now = Date.now();
+  if (tokenCache && now - tokenCache.createdAt < TOKEN_CACHE_TTL_MS) {
+    return tokenCache.value;
+  }
+  const value = await getTodayTokenUsage();
+  tokenCache = { createdAt: now, value };
+  return value;
 }
 
 async function listSessionFilesForRange(start, end) {
@@ -296,14 +320,18 @@ function requestRateLimits() {
   const send = (method, params) => {
     const id = nextId++;
     const payload = params === undefined ? { id, method } : { id, method, params };
-    child.stdin.write(`${JSON.stringify(payload)}\n`);
-
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         pending.delete(id);
         reject(new Error(`Codex request timed out: ${method}`));
       }, DEFAULT_TIMEOUT_MS);
       pending.set(id, { resolve, reject, timer });
+      child.stdin.write(`${JSON.stringify(payload)}\n`, (error) => {
+        if (!error) return;
+        clearTimeout(timer);
+        pending.delete(id);
+        reject(error);
+      });
     });
   };
 
@@ -319,7 +347,7 @@ function requestRateLimits() {
   });
 
   child.stderr.on("data", (chunk) => {
-    stderr += chunk.toString("utf8");
+    stderr = (stderr + chunk.toString("utf8")).slice(-8192);
   });
 
   return new Promise((resolve, reject) => {
@@ -341,7 +369,7 @@ function requestRateLimits() {
           clientInfo: {
             name: "codex-quota-widget",
             title: "Codex Quota Widget",
-            version: "1.0.0"
+            version: "1.1.0"
           },
           capabilities: null
         });

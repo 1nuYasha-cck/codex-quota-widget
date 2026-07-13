@@ -10,7 +10,7 @@
 
 <p align="center">
   <strong>A compact Windows desktop widget for monitoring your local Codex quota.</strong><br />
-  It keeps the 5-hour window, 7-day window, and today's token usage visible in a small desktop panel.
+  It keeps the 7-day quota and today's token usage visible in a small desktop panel.
 </p>
 
 <p align="center">
@@ -22,9 +22,9 @@
 
 ## Release Download
 
-The latest stable release is `v1.0`:
+The latest stable release is `v1.1.0`:
 
-[Download Codex Quota Widget v1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.0)
+[Download Codex Quota Widget v1.1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.1.0)
 
 Download the Windows portable `.exe` from the release page and run it directly. Windows may show an unknown-publisher warning because the app is not code-signed yet.
 
@@ -42,11 +42,11 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 
 ## Features
 
-- Shows remaining quota for the 5-hour Codex window.
 - Shows remaining quota and reset time for the 7-day window.
 - Displays the current plan type, such as `PLUS`.
 - Reads today's token usage from local `.codex/sessions` logs.
 - Supports always-on-top mode, tray hiding, startup launch, and configurable refresh intervals.
+- Supports free edge resizing and remembers the last window size.
 - Uses clear status colors: green for healthy, yellow for low, red for empty or failed, and blue for loading.
 
 ## Local Codex Path

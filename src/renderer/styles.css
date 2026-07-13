@@ -48,6 +48,8 @@ button {
 
 .widget {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
   padding: 8px;
@@ -190,13 +192,16 @@ button {
   grid-template-columns: 78px 1fr;
   gap: 8px;
   align-items: start;
+  flex: 1;
+  min-height: 0;
   margin-top: 7px;
 }
 
 .liquid-meter {
   position: relative;
   width: 78px;
-  height: 109px;
+  height: 100%;
+  min-height: 96px;
   overflow: hidden;
   border-radius: 16px 16px 26px 26px;
   background: rgba(255, 255, 255, 0.08);
@@ -271,7 +276,9 @@ button {
 .quota-panel {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, minmax(24px, 1fr));
   gap: 4px;
+  height: 100%;
 }
 
 .quota-card {
@@ -319,6 +326,17 @@ button {
   min-width: 0;
   color: var(--muted);
   font-size: 10px;
+  flex: 0 0 auto;
+}
+
+@media (min-width: 360px) {
+  .content {
+    grid-template-columns: 96px 1fr;
+  }
+
+  .liquid-meter {
+    width: 96px;
+  }
 }
 
 .status-dot {

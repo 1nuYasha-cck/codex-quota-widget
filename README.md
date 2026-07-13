@@ -10,7 +10,7 @@
 
 <p align="center">
   <strong>一个面向 Windows 的 Codex 剩余额度桌面小组件。</strong><br />
-  用悬浮窗口、状态灯和液态仪表盘，把 5 小时窗口、7 天窗口、今日 Token 用量放在桌面一角。
+  用悬浮窗口、状态灯和液态仪表盘，把 7 天额度与今日 Token 用量放在桌面一角。
 </p>
 
 <p align="center">
@@ -37,9 +37,9 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 ## Release 下载
 
-最新稳定版为 `v1.0`，可直接在 GitHub Releases 下载 Windows 便携版：
+最新稳定版为 `v1.1.0`，可直接在 GitHub Releases 下载 Windows 便携版：
 
-[下载 Codex Quota Widget v1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.0)
+[下载 Codex Quota Widget v1.1.0](https://github.com/1uYasha/codex-quota-widget/releases/tag/v1.1.0)
 
 下载 `.exe` 后双击运行即可。首次运行如果 Windows SmartScreen 提示未知发布者，是因为当前构建未做代码签名；确认来源可信后，可以选择继续运行。
 
@@ -53,7 +53,7 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 | 状态 | 颜色 | 说明 |
 | --- | --- | --- |
-| 正常 | 绿色 | 5 小时窗口剩余额度充足 |
+| 正常 | 绿色 | 7 天窗口剩余额度充足 |
 | 偏低 | 黄色 | 剩余额度低于 10%，建议留意 |
 | 用尽 | 红色 | 当前窗口额度为 0 |
 | 读取中 | 蓝色 | 正在从本机 Codex 读取快照 |
@@ -63,7 +63,6 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 
 ### 1. 额度一眼可见
 
-- 显示 5 小时窗口剩余百分比。
 - 显示 7 天窗口剩余百分比和重置时间。
 - 显示当前计划类型，例如 `PLUS`。
 - 使用 LED 状态点区分正常、偏低、用尽和读取失败。
@@ -77,6 +76,7 @@ Codex Quota Widget 是一个轻量级桌面工具，用来快速查看本机 Cod
 ### 3. 桌面悬浮体验
 
 - 无边框透明窗口，适合放在屏幕角落。
+- 可从窗口边缘自由拖动调整大小，并自动记住上次尺寸。
 - 支持置顶和取消置顶。
 - 支持隐藏到托盘，点击托盘图标可再次显示。
 - 支持开机自启动。

@@ -7,8 +7,7 @@ const i18n = {
     empty: "\u7528\u5c3d",
     error: "\u5931\u8d25",
     remaining: "\u5269\u4f59",
-    primary: "5\u5c0f\u65f6",
-    secondary: "7\u5929",
+    weekly: "7\u5929",
     plan: "\u8ba1\u5212",
     todayTokens: "\u4eca\u65e5Token",
     refresh: "\u5237\u65b0",
@@ -30,8 +29,7 @@ const i18n = {
     empty: "Empty",
     error: "Failed",
     remaining: "Left",
-    primary: "5h",
-    secondary: "7d",
+    weekly: "7d",
     plan: "Plan",
     todayTokens: "Today",
     refresh: "Refresh",
@@ -73,10 +71,8 @@ const elements = {
   liquidFill: $("liquidFill"),
   remaining: $("remaining"),
   remainingLabel: $("remainingLabel"),
-  primaryLabel: $("primaryLabel"),
-  primaryText: $("primaryText"),
-  secondaryLabel: $("secondaryLabel"),
-  secondaryText: $("secondaryText"),
+  weeklyLabel: $("weeklyLabel"),
+  weeklyText: $("weeklyText"),
   planLabel: $("planLabel"),
   planText: $("planText"),
   todayTokenLabel: $("todayTokenLabel"),
@@ -123,8 +119,7 @@ function render() {
   elements.stateText.textContent = state.loading ? t("loading") : t(level);
   elements.langBtn.textContent = state.lang === "zh" ? "EN" : "\u4e2d";
   elements.remainingLabel.textContent = t("remaining");
-  elements.primaryLabel.textContent = t("primary");
-  elements.secondaryLabel.textContent = t("secondary");
+  elements.weeklyLabel.textContent = t("weekly");
   elements.planLabel.textContent = t("plan");
   elements.todayTokenLabel.textContent = t("todayTokens");
 
@@ -150,8 +145,7 @@ function render() {
 
   elements.remaining.textContent = typeof percent === "number" ? `${percent}%` : "--%";
   elements.liquidFill.style.height = `${typeof percent === "number" ? percent : 0}%`;
-  elements.primaryText.textContent = formatWindow(quota?.primary);
-  elements.secondaryText.textContent = formatWindow(quota?.secondary, true);
+  elements.weeklyText.textContent = formatWindow(quota?.weekly, true);
   elements.planText.textContent = quota?.planType ? quota.planType.toUpperCase() : t("noData");
   elements.todayTokenText.textContent = formatTokens(quota?.todayTokens);
   elements.todayTokenText.title = formatTokenTitle(quota?.todayTokens);

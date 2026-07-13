@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:" />
     <title>Codex Quota Widget</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -60,12 +61,8 @@
 
         <div class="quota-panel">
           <div class="quota-card primary">
-            <span id="primaryLabel">5小时</span>
-            <strong id="primaryText">--</strong>
-          </div>
-          <div class="quota-card">
-            <span id="secondaryLabel">7天</span>
-            <strong id="secondaryText">--</strong>
+            <span id="weeklyLabel">7天</span>
+            <strong id="weeklyText">--</strong>
           </div>
           <div class="quota-card slim">
             <span id="planLabel">计划</span>
