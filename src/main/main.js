@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage, screen } = 
 const fs = require("node:fs");
 const path = require("node:path");
 const { getQuota } = require("./quota-service");
+const { syncDockVisibility } = require("./dock-visibility");
 const {
   DEFAULT_MENU_BAR_QUOTA_SOURCE,
   normalizeMenuBarQuotaSource,
@@ -69,8 +70,16 @@ function createWindow() {
     clearTimeout(saveWindowSizeTimer);
     saveWindowSizeTimer = setTimeout(saveSettings, 300);
   });
-  mainWindow.on("show", notifyMenuBarStateChanged);
-  mainWindow.on("hide", notifyMenuBarStateChanged);
+  mainWindow.on("show", () => {
+    syncDockVisibility({ platform: process.platform, dock: app.dock, widgetVisible: true });
+    notifyMenuBarStateChanged();
+  });
+  mainWindow.on("hide", () => {
+    // The widget remains available from the macOS menu bar while it runs in
+    // the background, so it should not leave a redundant Dock icon behind.
+    syncDockVisibility({ platform: process.platform, dock: app.dock, widgetVisible: false });
+    notifyMenuBarStateChanged();
+  });
   mainWindow.once("ready-to-show", () => {
     mainWindow.setSkipTaskbar(true);
     mainWindow.show();
@@ -389,6 +398,7 @@ app.whenReady().then(() => {
   loadSettings();
   createWindow();
   createTray();
+  syncDockVisibility({ platform: process.platform, dock: app.dock, widgetVisible: mainWindow?.isVisible() });
 
   ipcMain.handle("quota:get", async () => {
     const quota = await getQuota();

@@ -23,9 +23,9 @@
 
 ## Release Download
 
-The latest stable release is `v1.3.0`, with Windows and Apple Silicon Mac packages in the same GitHub Release:
+The latest stable release is `v1.3.1`, with Windows and Apple Silicon Mac packages in the same GitHub Release:
 
-[Download ChatGPT Quota v1.3.0](https://github.com/1nuYasha-cck/codex-quota-widget/releases/tag/v1.3.0)
+[Download ChatGPT Quota v1.3.1](https://github.com/1nuYasha-cck/codex-quota-widget/releases/tag/v1.3.1)
 
 Download the Windows portable `.exe`, or download `mac-arm64.zip` for an Apple Silicon Mac. Both builds are currently unsigned, so the operating system may require manual approval on first launch.
 
@@ -49,7 +49,7 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 
 | Platform | Platform-specific experience | Release format |
 | --- | --- | --- |
-| Apple Silicon Mac | Menu bar icon and remaining percentage; switchable 7-day/5-hour source; dedicated settings popover; menu bar stays active after the widget is closed | ARM64 `.zip` containing the `.app` |
+| Apple Silicon Mac | Menu bar icon and remaining percentage; switchable 7-day/5-hour source; dedicated settings popover; menu bar stays active after the widget is closed and the Dock icon hides automatically | ARM64 `.zip` containing the `.app` |
 | Windows x64 | Left-click tray toggle; native right-click settings menu; always-on-top, startup, and refresh interval controls; no installer required | Portable `.exe` |
 
 ### Mac
@@ -57,7 +57,7 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 - Keeps the cat-ear icon and selected remaining percentage visible in the menu bar.
 - Lets the menu bar percentage follow either the 7-day or 5-hour quota and remembers the choice.
 - Opens a dedicated settings popover from the menu bar icon.
-- Closing the floating widget hides it while the menu bar process remains active.
+- Closing the floating widget hides it while the menu bar process remains active, and automatically hides the Dock icon in the background.
 - Ships as a native Apple Silicon ARM64 build for M-series Macs.
 
 ### Windows
@@ -120,7 +120,7 @@ npm run build
 The output executable is generated at:
 
 ```txt
-dist/ChatGPT-Quota-1.3.0-win-x64.exe
+dist/ChatGPT-Quota-1.3.1-win-x64.exe
 ```
 
 Build the Apple Silicon Mac package on macOS:

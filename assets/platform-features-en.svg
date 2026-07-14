@@ -6,7 +6,7 @@
   </defs>
   <rect width="1200" height="600" rx="30" fill="url(#bg)"/>
   <text x="600" y="70" text-anchor="middle" fill="#F8FAFC" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">One quota core, two native desktop experiences</text>
-  <text x="600" y="104" text-anchor="middle" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif" font-size="17">ChatGPT Quota v1.3.0 · Apple Silicon Mac + Windows x64</text>
+  <text x="600" y="104" text-anchor="middle" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif" font-size="17">ChatGPT Quota v1.3.1 · Apple Silicon Mac + Windows x64</text>
   <g font-family="Segoe UI, Arial, sans-serif">
     <rect x="70" y="130" width="500" height="400" rx="26" fill="url(#mac)" stroke="#2DD4BF" stroke-opacity="0.52"/>
     <circle cx="120" cy="180" r="23" fill="#2DD4BF"/>
