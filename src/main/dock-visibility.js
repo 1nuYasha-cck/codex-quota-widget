@@ -7,4 +7,11 @@ function syncDockVisibility({ platform, dock, widgetVisible }) {
   return true;
 }
 
-module.exports = { syncDockVisibility };
+function setDockIcon({ platform, dock, icon }) {
+  if (platform !== "darwin" || !dock || !icon) return false;
+
+  dock.setIcon(icon);
+  return true;
+}
+
+module.exports = { syncDockVisibility, setDockIcon };
