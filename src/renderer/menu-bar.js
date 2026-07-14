@@ -42,6 +42,7 @@ function render(state) {
   elements.updatedText.textContent = formatUpdatedAt(quota, state?.refreshing);
   elements.summaryLabel.textContent = source === "fiveHour" ? "5小时剩余额度" : "7天剩余额度";
   elements.summaryPercent.textContent = formatPercent(selectedWindow);
+  elements.summaryPercent.dataset.level = window.WidgetLogic.getLevel(selectedWindow?.remainingPercent, null, false);
   elements.fiveHourPercent.textContent = `5小时 ${formatPercent(quota?.fiveHour)}`;
   elements.weeklyPercent.textContent = `7天 ${formatPercent(quota?.weekly)}`;
   elements.toggleWidgetText.textContent = state?.widgetVisible ? "隐藏小组件" : "显示小组件";

@@ -5,7 +5,9 @@
   --muted: rgba(235, 240, 245, 0.58);
   --line: rgba(255, 255, 255, 0.12);
   --hover: rgba(255, 255, 255, 0.08);
-  --accent: #29d188;
+  --accent: #34c98f;
+  --warning: #f2b84b;
+  --critical: #ff5c5c;
 }
 
 * {
@@ -93,10 +95,23 @@ input {
 }
 
 .summary-heading strong {
-  color: var(--accent);
+  color: var(--muted);
   font-size: 16px;
   line-height: 1;
   letter-spacing: -0.2px;
+}
+
+.summary-heading strong[data-level="ready"] {
+  color: var(--accent);
+}
+
+.summary-heading strong[data-level="warning"] {
+  color: var(--warning);
+}
+
+.summary-heading strong[data-level="critical"],
+.summary-heading strong[data-level="empty"] {
+  color: var(--critical);
 }
 
 .quota-summary p {
@@ -155,7 +170,7 @@ button.menu-row {
 .menu-row:focus-visible,
 select:focus-visible,
 input:focus-visible {
-  outline: 2px solid rgba(41, 209, 136, 0.85);
+  outline: 2px solid rgba(52, 201, 143, 0.85);
   outline-offset: -2px;
 }
 
@@ -218,8 +233,8 @@ input:focus-visible {
 }
 
 .quit-row:hover {
-  color: #ff7d88;
-  background: rgba(255, 79, 97, 0.1);
+  color: #ff8080;
+  background: rgba(255, 92, 92, 0.1);
 }
 
 body[data-refreshing="true"] #refreshBtn .refresh-icon {

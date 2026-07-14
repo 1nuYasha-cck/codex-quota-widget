@@ -23,11 +23,11 @@
 
 ## Release Download
 
-The latest stable release is `v1.4.0`, with Windows and Apple Silicon Mac packages in the same GitHub Release:
+The latest stable release is `v1.4.1`, with Windows and Apple Silicon Mac packages in the same GitHub Release:
 
-[Download ChatGPT Quota v1.4.0](https://github.com/1nuYasha-cck/codex-quota-widget/releases/tag/v1.4.0)
+[Download ChatGPT Quota v1.4.1](https://github.com/1nuYasha-cck/codex-quota-widget/releases/tag/v1.4.1)
 
-Download the Windows portable `.exe`, or download `mac-arm64.zip` for an Apple Silicon Mac. Both builds are currently unsigned, so the operating system may require manual approval on first launch.
+Download the Windows portable `.exe`, or download `mac-arm64.zip` for an Apple Silicon Mac. Windows is unsigned and the Mac bundle only has an ad-hoc local-execution signature; neither build has a trusted commercial code signature, so the operating system may require manual approval on first launch.
 
 ## Overview
 
@@ -49,7 +49,7 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 
 | Platform | Platform-specific experience | Release format |
 | --- | --- | --- |
-| Apple Silicon Mac | Menu bar icon and remaining percentage; switchable 7-day/5-hour source; compact `216×400` settings popover; menu bar stays active after the widget is closed and the Dock icon hides automatically | ARM64 `.zip` containing the `.app` |
+| Apple Silicon Mac | Menu bar icon and remaining percentage; switchable 7-day/5-hour source; compact `216×390` settings popover; menu bar stays active after the widget is closed and the Dock icon hides automatically | ARM64 `.zip` containing the `.app` |
 | Windows x64 | Left-click tray toggle; native right-click settings menu; always-on-top, startup, and refresh interval controls; no installer required | Portable `.exe` |
 
 ### Mac
@@ -58,7 +58,7 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 - Lets the menu bar percentage follow either the 7-day or 5-hour quota and remembers the choice.
 - Opens a dedicated settings popover from the menu bar icon.
 - Closing the floating widget hides it while the menu bar process remains active, and automatically hides the Dock icon in the background.
-- Uses a compact `216×400` menu-bar settings popover with scaled-down controls still available.
+- Uses a compact `216×390` menu-bar settings popover with scaled-down controls still available.
 - Ships as a native Apple Silicon ARM64 build for M-series Macs.
 
 ### Windows
@@ -78,7 +78,7 @@ The project is inspired by the desktop-widget idea in `xicunwus2025-sys/codex-le
 - Supports free edge resizing and remembers the last window size.
 - Scales the meter, cards, controls, spacing, and type together with the window.
 - Keeps only More, Hide, and Quit in the title bar; refresh, pin, language, and display controls live in the More menu.
-- Uses clear meter thresholds: green at 40% or above, orange below 40%, red below 20%, and blue while loading.
+- Uses consistent quota thresholds: emerald `#34C98F` at 40% or above, amber `#F2B84B` from 20% to 39%, and coral `#FF5C5C` below 20%. Loading and read failures only affect the read-status indicator.
 
 ## Local Codex Path
 
@@ -121,7 +121,7 @@ npm run build
 The output executable is generated at:
 
 ```txt
-dist/ChatGPT-Quota-1.4.0-win-x64.exe
+dist/ChatGPT-Quota-1.4.1-win-x64.exe
 ```
 
 Build the Apple Silicon Mac package on macOS:
@@ -130,7 +130,7 @@ Build the Apple Silicon Mac package on macOS:
 npm run build:mac
 ```
 
-The app is generated under `dist/ChatGPT Quota-darwin-arm64/`.
+The app is generated at `dist/mac-arm64/ChatGPT Quota.app`. The Apple Silicon bundle receives an ad-hoc signature for local ARM64 execution; this is not an Apple Developer ID signature. Create the release ZIP with `ditto -c -k --sequesterRsrc --keepParent`.
 
 ## Development
 

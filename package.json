@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-quota",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Desktop widget for monitoring local Codex quota.",
   "main": "src/main/main.js",
   "author": "ChatGPT Quota Contributors",
@@ -11,11 +11,12 @@
     "start": "electron .",
     "build": "electron-builder --win portable --x64",
     "build:dir": "electron-builder --dir --win --x64",
-    "build:mac": "electron-packager . \"ChatGPT Quota\" --platform=darwin --arch=arm64 --out=dist --overwrite --asar --prune=true --icon=assets/icon.icns --extend-info=build/mac-info.plist --app-bundle-id=cn.chatgpt.quota --app-category-type=public.app-category.utilities",
+    "build:mac": "electron-builder --mac dir --arm64 && codesign --force --deep --sign - --identifier cn.chatgpt.quota.desktop --timestamp=none \"dist/mac-arm64/ChatGPT Quota.app\"",
+    "qa:menu": "electron scripts/qa-menu-preview.js",
     "test": "node --test"
   },
   "build": {
-    "appId": "cn.chatgpt.quota",
+    "appId": "cn.chatgpt.quota.desktop",
     "productName": "ChatGPT Quota",
     "directories": {
       "output": "dist"
@@ -56,7 +57,6 @@
     }
   },
   "devDependencies": {
-    "@electron/packager": "^20.0.2",
     "electron": "^43.0.0",
     "electron-builder": "^26.15.3"
   }

@@ -23,7 +23,7 @@ test("display settings preserve explicit hidden items and five-hour liquid", () 
   );
 });
 
-test("liquid thresholds are green at 40, orange below 40, and red below 20", () => {
+test("quota thresholds are green at 40, amber from 20, and red below 20", () => {
   assert.equal(getLevel(undefined, null, false), "unavailable");
   assert.equal(getLevel(40, null, false), "ready");
   assert.equal(getLevel(39, null, false), "warning");

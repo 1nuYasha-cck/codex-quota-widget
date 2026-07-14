@@ -166,18 +166,13 @@ async function refreshQuota() {
 function render() {
   const quota = state.quota;
   const selectedWindow = state.displaySettings.liquidSource === "fiveHour" ? quota?.fiveHour : quota?.weekly;
-  const statusWindow = state.displaySettings.showLiquid
-    ? selectedWindow
-    : state.displaySettings.showWeekly
-      ? quota?.weekly
-      : state.displaySettings.showFiveHour
-        ? quota?.fiveHour
-        : quota?.weekly || quota?.fiveHour;
   const percent = selectedWindow?.remainingPercent;
-  const nextLevel = window.WidgetLogic.getLevel(statusWindow?.remainingPercent, state.error, false);
-  const level = state.loading ? elements.body.dataset.state || nextLevel : nextLevel;
+  const healthLevel = state.loading ? "loading" : state.error ? "error" : "ready";
+  const liquidLevel = window.WidgetLogic.getLevel(percent, null, false);
+  const fiveHourLevel = window.WidgetLogic.getLevel(quota?.fiveHour?.remainingPercent, null, false);
+  const weeklyLevel = window.WidgetLogic.getLevel(quota?.weekly?.remainingPercent, null, false);
 
-  elements.body.dataset.state = level;
+  elements.body.dataset.state = healthLevel;
   elements.brandName.textContent = "ChatGPT Quota";
   elements.stateText.textContent = state.error ? t("readFailed") : t("readNormal");
   elements.langBtn.textContent = state.lang === "zh" ? "English" : "\u4e2d\u6587";
@@ -206,7 +201,7 @@ function render() {
   elements.minimizeBtn.title = t("hide");
   elements.closeBtn.title = t("close");
 
-  elements.trafficLight.className = `traffic-light ${level}`;
+  elements.trafficLight.className = `traffic-light ${healthLevel}`;
 
   if (state.loading) {
     elements.statusDot.className = "status-dot refreshing";
@@ -224,6 +219,9 @@ function render() {
 
   elements.remaining.textContent = typeof percent === "number" ? `${percent}%` : "--%";
   elements.liquidFill.style.height = `${typeof percent === "number" ? percent : 0}%`;
+  elements.liquidMeter.dataset.level = liquidLevel;
+  elements.fiveHourCard.dataset.level = fiveHourLevel;
+  elements.weeklyCard.dataset.level = weeklyLevel;
   elements.fiveHourText.textContent = formatWindow(quota?.fiveHour);
   elements.weeklyText.textContent = formatWindow(quota?.weekly, true);
   elements.planText.textContent = quota?.planType ? quota.planType.toUpperCase() : t("noData");
@@ -276,7 +274,7 @@ function formatQuotaError(error) {
 
 function formatWindow(windowInfo, includeDate = false) {
   if (!windowInfo) return t("noData");
-  const reset = windowInfo.resetsAt ? ` / ${includeDate ? formatDateTime(windowInfo.resetsAt) : formatTime(windowInfo.resetsAt)}` : "";
+  const reset = windowInfo.resetsAt ? ` ${includeDate ? formatDateTime(windowInfo.resetsAt) : formatTime(windowInfo.resetsAt)}` : "";
   return `${windowInfo.remainingPercent}%${reset}`;
 }
 

@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage, screen } = 
 const fs = require("node:fs");
 const path = require("node:path");
 const { getQuota } = require("./quota-service");
-const { syncDockVisibility, setDockIcon } = require("./dock-visibility");
+const { syncDockVisibility } = require("./dock-visibility");
 const { MENU_BAR_POPOVER_SIZE } = require("./menu-bar-layout");
 const {
   DEFAULT_MENU_BAR_QUOTA_SOURCE,
@@ -33,14 +33,10 @@ function getIcon() {
   return image.isEmpty() ? undefined : image;
 }
 
-function getDockIcon() {
-  const iconPath = path.join(__dirname, "../../assets/icon.icns");
-  const image = nativeImage.createFromPath(iconPath);
-  return image.isEmpty() ? getIcon() : image;
-}
-
 function createWindow() {
-  const icon = getIcon();
+  // macOS reads the application icon exclusively from the application bundle.
+  // Windows still needs an explicit window icon for the taskbar executable.
+  const icon = process.platform === "darwin" ? undefined : getIcon();
   mainWindow = new BrowserWindow({
     width: windowSize.width,
     height: windowSize.height,
@@ -403,12 +399,8 @@ async function handleMenuBarAction(action, value) {
 
 app.whenReady().then(() => {
   loadSettings();
-  // Explicitly refresh macOS's Dock image at launch. This prevents a cached
-  // icon from an earlier build from being shown after the app is replaced.
-  setDockIcon({ platform: process.platform, dock: app.dock, icon: getDockIcon() });
   createWindow();
   createTray();
-  syncDockVisibility({ platform: process.platform, dock: app.dock, widgetVisible: mainWindow?.isVisible() });
 
   ipcMain.handle("quota:get", async () => {
     const quota = await getQuota();

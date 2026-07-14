@@ -6,10 +6,12 @@
   --line: rgba(255, 255, 255, 0.16);
   --text: #f3f8fb;
   --muted: #aebbc5;
-  --accent: #29d188;
-  --accent-rgb: 41, 209, 136;
-  --danger: #ff4f61;
-  --warn: #ff9f43;
+  --accent: #34c98f;
+  --accent-rgb: 52, 201, 143;
+  --danger: #ff5c5c;
+  --danger-rgb: 255, 92, 92;
+  --warn: #f2b84b;
+  --warn-rgb: 242, 184, 75;
 }
 
 * {
@@ -24,24 +26,6 @@ body {
   overflow: hidden;
   background: transparent;
   color: var(--text);
-}
-
-body[data-state="warning"] {
-  --accent: var(--warn);
-  --accent-rgb: 255, 159, 67;
-}
-
-body[data-state="critical"],
-body[data-state="empty"],
-body[data-state="error"] {
-  --accent: var(--danger);
-  --accent-rgb: 255, 79, 97;
-}
-
-body[data-state="loading"],
-body[data-state="unavailable"] {
-  --accent: #69b7ff;
-  --accent-rgb: 105, 183, 255;
 }
 
 button {
@@ -140,6 +124,21 @@ button {
   box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(var(--accent-rgb), 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
 }
 
+.traffic-light.ready {
+  background: var(--accent);
+  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(var(--accent-rgb), 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+.traffic-light.loading {
+  background: #69b7ff;
+  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(105, 183, 255, 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+.traffic-light.error {
+  background: var(--danger);
+  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(var(--danger-rgb), 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
 .traffic-light.loading,
 .status-dot.loading,
 .status-dot.refreshing {
@@ -152,13 +151,13 @@ button {
 }
 
 .status-dot.ready {
-  background: #29d188;
-  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(41, 209, 136, 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+  background: var(--accent);
+  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(var(--accent-rgb), 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
 }
 
 .status-dot.error {
   background: var(--danger);
-  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(255, 79, 97, 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 calc(8px * var(--ui-scale)) rgba(var(--danger-rgb), 0.92), inset 0 1px 1px rgba(255, 255, 255, 0.65);
 }
 
 .window-actions {
@@ -384,6 +383,27 @@ button {
   transition: height 0.5s ease;
 }
 
+.liquid-meter[data-level="warning"] {
+  --quota-rgb: var(--warn-rgb);
+}
+
+.liquid-meter[data-level="critical"],
+.liquid-meter[data-level="empty"] {
+  --quota-rgb: var(--danger-rgb);
+}
+
+.liquid-meter[data-level="ready"] {
+  --quota-rgb: var(--accent-rgb);
+}
+
+.liquid-meter[data-level="unavailable"] {
+  --quota-rgb: 105, 183, 255;
+}
+
+.liquid-meter .liquid-fill {
+  background: linear-gradient(180deg, rgba(var(--quota-rgb, 105, 183, 255), 0.82), rgba(var(--quota-rgb, 105, 183, 255), 0.34));
+}
+
 .wave {
   position: absolute;
   left: calc(-20px * var(--ui-scale));
@@ -437,8 +457,21 @@ button {
 }
 
 .quota-card.primary {
-  background: rgba(var(--accent-rgb), 0.13);
-  border-color: rgba(var(--accent-rgb), 0.24);
+  background: rgba(var(--quota-rgb, 105, 183, 255), 0.13);
+  border-color: rgba(var(--quota-rgb, 105, 183, 255), 0.5);
+}
+
+.quota-card.primary[data-level="ready"] {
+  --quota-rgb: var(--accent-rgb);
+}
+
+.quota-card.primary[data-level="warning"] {
+  --quota-rgb: var(--warn-rgb);
+}
+
+.quota-card.primary[data-level="critical"],
+.quota-card.primary[data-level="empty"] {
+  --quota-rgb: var(--danger-rgb);
 }
 
 .quota-card span,
