@@ -443,7 +443,7 @@ function requestRateLimitsFrom(candidate) {
           clientInfo: {
             name: "chatgpt-quota",
             title: "ChatGPT Quota",
-            version: "1.3.1"
+            version: "1.4.0"
           },
           capabilities: null
         });

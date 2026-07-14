@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { getQuota } = require("./quota-service");
 const { syncDockVisibility } = require("./dock-visibility");
+const { MENU_BAR_POPOVER_SIZE } = require("./menu-bar-layout");
 const {
   DEFAULT_MENU_BAR_QUOTA_SOURCE,
   normalizeMenuBarQuotaSource,
@@ -90,8 +91,8 @@ function createWindow() {
 function createMenuBarWindow() {
   if (process.platform !== "darwin") return;
   menuBarWindow = new BrowserWindow({
-    width: 330,
-    height: 552,
+    width: MENU_BAR_POPOVER_SIZE.width,
+    height: MENU_BAR_POPOVER_SIZE.height,
     frame: false,
     transparent: true,
     resizable: false,
